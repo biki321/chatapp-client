@@ -1,25 +1,32 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter, Route, Switch } from "react-router-dom";
+import ChatAppComp from "./components/chatAppComp";
+import LoginComp from "./components/LoginComp";
+import ProtectedRoute from "./components/ProtectedRoute";
+import SignupComp from "./components/SignupComp";
+import TestComp from "./components/testComp";
+import { AuthProvider } from "./contexts/AuthContext";
 
 function App() {
+  console.log("inside app comp");
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <AuthProvider>
+      <BrowserRouter>
+        <Switch>
+          <Route path="/" exact>
+            <LoginComp />
+          </Route>
+          <Route path="/signup" exact>
+            <SignupComp />
+          </Route>
+          <ProtectedRoute path="/chat" exact>
+            <ChatAppComp />
+          </ProtectedRoute>
+          <ProtectedRoute path="/test" exact>
+            <TestComp />
+          </ProtectedRoute>
+        </Switch>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 
