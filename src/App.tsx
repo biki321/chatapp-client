@@ -1,31 +1,33 @@
 import { BrowserRouter, Route, Switch } from "react-router-dom";
-import ChatAppComp from "./components/chatAppComp";
-import LoginComp from "./components/LoginComp";
+import ChatApp from "./components/ChatApp";
+import Login from "./components/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
-import SignupComp from "./components/SignupComp";
-import TestComp from "./components/testComp";
+import SignUp from "./components/SignUp";
 import { AuthProvider } from "./contexts/AuthContext";
+import { AxiosInterceptContextProvider } from "./contexts/AxiosInterceptContext";
+import { SocketContextProvider } from "./contexts/SocketContext";
 
 function App() {
   console.log("inside app comp");
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <Switch>
-          <Route path="/" exact>
-            <LoginComp />
-          </Route>
-          <Route path="/signup" exact>
-            <SignupComp />
-          </Route>
-          <ProtectedRoute path="/chat" exact>
-            <ChatAppComp />
-          </ProtectedRoute>
-          <ProtectedRoute path="/test" exact>
-            <TestComp />
-          </ProtectedRoute>
-        </Switch>
-      </BrowserRouter>
+      <AxiosInterceptContextProvider>
+        <BrowserRouter>
+          <Switch>
+            <Route path="/" exact>
+              <Login />
+            </Route>
+            <Route path="/signup" exact>
+              <SignUp />
+            </Route>
+            <SocketContextProvider>
+              <ProtectedRoute path="/chat" exact>
+                <ChatApp />
+              </ProtectedRoute>
+            </SocketContextProvider>
+          </Switch>
+        </BrowserRouter>
+      </AxiosInterceptContextProvider>
     </AuthProvider>
   );
 }

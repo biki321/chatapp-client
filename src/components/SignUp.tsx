@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Redirect, useHistory, useLocation, NavLink } from "react-router-dom";
+import { Redirect, useHistory, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 // import "../styles/loginPage.css";
 
@@ -9,8 +9,8 @@ interface LocationState {
   };
 }
 
-export default function LoginComp() {
-  const { authState, login } = useAuth();
+export default function SignUp() {
+  const { authState, signup } = useAuth();
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const location = useLocation<LocationState>();
@@ -28,11 +28,11 @@ export default function LoginComp() {
     return <Redirect to={from.pathname} />;
   }
 
-  const loginFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const signupFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      login(username, password, () => {
-        console.log("at login func ", from);
+      signup(username, password, () => {
+        console.log("at signup func ", from);
         history.replace(from);
       });
       // history.replace("/chat");
@@ -42,10 +42,10 @@ export default function LoginComp() {
   };
 
   return (
-    <div className="login-page-div">
-      <p>{authState.loginError}</p>
-      <h1>Login</h1>
-      <form className="login-form" onSubmit={(e) => loginFormSubmit(e)}>
+    <div className="signup-page-div">
+      <p>{authState.signupError}</p>
+      <h1>Signup</h1>
+      <form className="signup-form" onSubmit={(e) => signupFormSubmit(e)}>
         <input
           type="text"
           name="username"
@@ -60,9 +60,8 @@ export default function LoginComp() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <button type="submit">login</button>
+        <button type="submit">signup</button>
       </form>
-      <NavLink to="/signup">signup </NavLink>
     </div>
   );
 }

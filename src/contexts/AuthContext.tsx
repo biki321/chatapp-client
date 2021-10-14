@@ -1,19 +1,12 @@
 import { AxiosResponse } from "axios";
 import React, { useContext, useEffect, useState, useCallback } from "react";
+import IUser from "../interfaces/iUser.interface";
 import axiosIns from "../services/axiosIns";
 
 console.log("auth context outside");
 
 interface IProps {
   children: JSX.Element;
-}
-
-interface IUser {
-  id: number;
-  username: string;
-  avatar: string;
-  tokenVersion: number;
-  bio: string | null;
 }
 
 interface IAuthState {

@@ -1,0 +1,24 @@
+.profile {
+  width: 100%;
+  background: #00a48a;
+  display: flex;
+  align-items: center;
+  height: 60px;
+  padding: 0px 10px;
+}
+
+.profile .profile-pic {
+  width: 50px;
+  border-radius: 50%;
+  margin-left: 20px;
+}
+.profile .back-arrow {
+  width: 30px;
+  cursor: pointer;
+}
+
+.profile .profile-name {
+  color: white;
+  padding: 0px 10px;
+  font-size: 0.8rem;
+}

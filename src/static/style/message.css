@@ -1,0 +1,32 @@
+.message-box {
+  display: flex;
+}
+.message-box .flex1 {
+  flex: 1;
+}
+.message-main {
+  max-width: 80%;
+}
+.message-content {
+  cursor: pointer;
+  border-radius: 12px;
+  word-break: break-all;
+  padding: 10px 15px;
+  margin: 6px 0px;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+}
+.message-box.left-side .message-content {
+  background: #ffffff;
+}
+
+.message-box.left-side .message-status {
+  float: left;
+}
+
+.message-box.right-side .message-content {
+  background: #cfd3e4;
+}
+
+.message-box.right-side .message-status {
+  float: right;
+}
