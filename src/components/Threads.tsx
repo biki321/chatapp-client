@@ -7,12 +7,21 @@ import IMessage from "../interfaces/iMessage.interface";
 import { useAuth } from "../contexts/AuthContext";
 import { useAxiosIntercept } from "../contexts/AxiosInterceptContext";
 import IModifiedUser from "../interfaces/iModifiedUser.interface";
+import IUpdateThread from "../interfaces/iUpdateThread.interface";
 
 interface IProps {
-  setCurrentThread: (threadId: string) => void;
+  currentThreadId: string | null;
+  setCurrentThreadId: React.Dispatch<React.SetStateAction<string | null>>;
+  updateThread: IUpdateThread | null;
+  updateReadProp: number | null;
 }
 
-export default function Threads({ setCurrentThread }: IProps) {
+export default function Threads({
+  setCurrentThreadId,
+  currentThreadId,
+  updateThread,
+  updateReadProp,
+}: IProps) {
   const { socket } = useSocketContext();
   const { authState } = useAuth();
   const axiosIntercept = useAxiosIntercept();
@@ -44,14 +53,6 @@ export default function Threads({ setCurrentThread }: IProps) {
       return filteredState;
     });
   }, []);
-
-  const onGetReadReciptUpdate = useCallback(
-    ({ userId, otherUserId }: { userId: string; otherUserId: string }) => {
-      console.log("msg at onGetReadUpdate");
-      updateRead(userId, otherUserId);
-    },
-    []
-  );
 
   const onThreadStatusHandler = useCallback(
     ({ userId, online }: { userId: string; online: boolean }) => {
@@ -90,55 +91,126 @@ export default function Threads({ setCurrentThread }: IProps) {
 
   useEffect(() => {
     socket?.on("get_message", onMsgReceive);
-    socket?.on("get_read_update", onGetReadReciptUpdate);
     socket?.on("user_status", onThreadStatusHandler);
 
     return () => {
       socket?.off("get_message", onMsgReceive);
-      socket?.off("get_read_update", onGetReadReciptUpdate);
       socket?.off("user_status", onThreadStatusHandler);
     };
-  }, [onGetReadReciptUpdate, onMsgReceive, onThreadStatusHandler, socket]);
+  }, [onMsgReceive, onThreadStatusHandler, socket]);
 
-  const updateRead = (userId: string, otherUserId: string) => {
+  useEffect(() => {
+    if (updateThread) {
+      setThreads((prevState) =>
+        prevState.map((thread) => {
+          if (updateThread.otherUserId === thread.otherUser.id)
+            return {
+              otherUser: { ...thread.otherUser },
+              threadMessage: {
+                ...updateThread.threadMessage,
+              },
+            };
+          else return thread;
+        })
+      );
+    }
+  }, [updateThread]);
+
+  useEffect(() => {
+    if (updateReadProp && currentThreadId) {
+      console.log("inside updateRead");
+      updateRead(currentThreadId);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [updateReadProp]);
+
+  const updateRead = (otherUserId: string) => {
     setThreads((prevState) =>
       prevState.map((element) =>
         element.otherUser.id === otherUserId
-          ? { ...element, read: true }
+          ? {
+              otherUser: { ...element.otherUser },
+              threadMessage: element.threadMessage
+                ? { ...element.threadMessage, read: true }
+                : null,
+            }
           : element
       )
     );
   };
 
   return !loading ? (
-    <>
-      <div>{authState.user?.username}</div>
-      <div className="container-threads">
-        {threads.map((thread) => (
-          <div
-            key={thread.otherUser.id}
-            className="profile thread"
-            onClick={(e) => setCurrentThread(thread.otherUser.id)}
-          >
-            <img
-              src={thread.otherUser?.avatar || pp}
-              className="profile-pic"
-              alt=""
-            />
-            <div className="profile-name">
-              <h3>
-                {thread.otherUser.username}..
-                {thread.otherUser.online ? "on" : "off"}
-              </h3>
-              <span className="unread-message">
-                {thread.threadMessage?.text.substr(0, 10)}
-              </span>
-            </div>
-            <div className="thread-time">11:15</div>
+    threads.length > 0 ? (
+      <>
+        <div className="container-threads">
+          <h2 className="brand-name">Chat</h2>
+          <div className="owner-profile">
+            <img src={authState.user?.avatar || pp} alt="" />
+            <h2>{authState.user?.username}</h2>
+            <div className="available">available</div>
           </div>
-        ))}
-      </div>
-    </>
+          <div className="thread-list">
+            {threads.map((thread) => (
+              <div
+                key={thread.otherUser.id}
+                className={`profile thread ${
+                  currentThreadId
+                    ? currentThreadId === thread.otherUser.id
+                      ? "current-thread"
+                      : ""
+                    : ""
+                }`}
+                onClick={(e) => setCurrentThreadId(thread.otherUser.id)}
+              >
+                <div className="profile-pic-div">
+                  <img src={thread.otherUser?.avatar || pp} alt="" />
+                  {thread.otherUser.online && (
+                    <div className="thread-online-status">
+                      <div className="outer-circle">
+                        <div className="inner-circle"></div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <div className="profile-name">
+                  <h3>{thread.otherUser.username}</h3>
+                  {/* if message sent by the authUser then don't use "unread-message class" */}
+                  <div
+                    className={`thread-msg ${
+                      thread.threadMessage?.senderId !== authState.user?.id
+                        ? thread.threadMessage?.read
+                          ? ""
+                          : "unread-message"
+                        : ""
+                    }`}
+                  >
+                    {thread.threadMessage?.text.substr(0, 10)}
+                  </div>
+                </div>
+
+                {thread.threadMessage ? (
+                  <div
+                    className={`thread-time ${
+                      thread.threadMessage?.senderId !== authState.user?.id
+                        ? thread.threadMessage?.read
+                          ? ""
+                          : "unread-message"
+                        : ""
+                    }`}
+                  >
+                    {new Date(thread.threadMessage.timestamp).getHours() +
+                      ":" +
+                      new Date(thread.threadMessage.timestamp).getMinutes()}
+                  </div>
+                ) : null}
+              </div>
+            ))}
+          </div>
+        </div>
+      </>
+    ) : (
+      <div>no user exists</div>
+    )
   ) : (
     <div>loading</div>
   );

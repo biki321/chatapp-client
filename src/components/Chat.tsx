@@ -1,20 +1,29 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { useAxiosIntercept } from "../contexts/AxiosInterceptContext";
 import { useSocketContext } from "../contexts/SocketContext";
 import IMessage from "../interfaces/iMessage.interface";
-import mic from "../static/img/mic.png";
 import AutoTextArea from "./AutoTextArea";
 import Message from "./Message";
 import ProfileMessageBox from "./ProfileMessageBox";
 import { v4 as uuidv4 } from "uuid";
 import IModifiedUser from "../interfaces/iModifiedUser.interface";
+import { IoMdSend } from "react-icons/io";
+import "../static/style/chat.css";
+import monthsMap from "../helpers/monthsMap";
+import IUpdateThread from "../interfaces/iUpdateThread.interface";
 
 interface IProps {
   otherUserId: string;
+  setUpdateThread: React.Dispatch<React.SetStateAction<IUpdateThread | null>>;
+  setUpdateReadThread: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
-export default function Chat({ otherUserId }: IProps) {
+export default function Chat({
+  otherUserId,
+  setUpdateThread,
+  setUpdateReadThread,
+}: IProps) {
   const { authState } = useAuth();
   const axiosIntercept = useAxiosIntercept();
   const [profile, setProfile] = useState({} as IModifiedUser);
@@ -22,9 +31,9 @@ export default function Chat({ otherUserId }: IProps) {
   const [typedMessage, setTypedMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [lastTimeStamp, setLastTimeStamp] = useState<string | null>(null);
-  const [loadMore, setLoadMore] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const { socket } = useSocketContext();
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const sendReadUpdate = useCallback(
     (unreadMsgIds: string[]) => {
@@ -33,12 +42,15 @@ export default function Chat({ otherUserId }: IProps) {
         otherUserId: otherUserId,
         ids: unreadMsgIds,
       });
+
+      //also update the read of the thread message of this otherUser's thread
+      setUpdateReadThread((prevState) => (prevState ? prevState + 1 : 1));
     },
-    [authState.user, otherUserId, socket]
+    [authState.user, otherUserId, setUpdateReadThread, socket]
   );
 
   useEffect(() => {
-    console.log("at chat useffect");
+    console.log("fetch message for", otherUserId);
     (async () => {
       try {
         const { data: profileData } = await axiosIntercept.get(
@@ -51,22 +63,13 @@ export default function Chat({ otherUserId }: IProps) {
         );
         console.log("profileData", profileData);
         setProfile(profileData);
-      } catch (error) {
-        setError("error in fetching messagesData");
-      }
-    })();
-  }, [authState.accessToken, axiosIntercept, otherUserId]);
 
-  useEffect(() => {
-    (async () => {
-      try {
         const { data: messagesData } = await axiosIntercept.get<IMessage[]>(
           `/chat/messages/${otherUserId}`,
           {
             headers: {
               Authorization: `token ${authState.accessToken}`,
             },
-            params: lastTimeStamp ? { lastTimeStamp } : {},
           }
         );
         console.log("messagesData", messagesData);
@@ -75,13 +78,19 @@ export default function Chat({ otherUserId }: IProps) {
           "messagesData[-1]?.timestamp",
           messagesData[messagesData.length - 1]
         );
-        setLastTimeStamp((prevState) => {
-          const length = messagesData.length;
-          if (length > 0) return messagesData[length - 1].timestamp;
-          else return prevState;
-        });
 
-        setMessages((prevState) => [...prevState, ...messagesData]);
+        const l =
+          messagesData.length > 0
+            ? messagesData[messagesData.length - 1].timestamp
+            : null;
+        console.log("l is", l);
+        setLastTimeStamp(
+          messagesData.length > 0
+            ? messagesData[messagesData.length - 1].timestamp
+            : null
+        );
+
+        setMessages([...messagesData]);
 
         //send read update for unread msgs
         const unreadMsgIds = messagesData
@@ -94,13 +103,7 @@ export default function Chat({ otherUserId }: IProps) {
       setLoading(false);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    authState.accessToken,
-    axiosIntercept,
-    otherUserId,
-    sendReadUpdate,
-    loadMore,
-  ]);
+  }, [authState.accessToken, axiosIntercept, otherUserId, sendReadUpdate]);
 
   const onMsgReceiveHandler = useCallback(
     (message: IMessage) => {
@@ -141,11 +144,49 @@ export default function Chat({ otherUserId }: IProps) {
     };
   }, [onGetReadUpdate, onMsgReceiveHandler, onUserStatusHandler, socket]);
 
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
   const loadMorePrevMessage = async () => {
-    setLoadMore((prevState) => prevState + 1);
+    if (lastTimeStamp) {
+      console.log("lastTimeStamp", lastTimeStamp);
+      try {
+        const { data: messagesData } = await axiosIntercept.get<IMessage[]>(
+          `/chat/messages/${otherUserId}`,
+          {
+            headers: {
+              Authorization: `token ${authState.accessToken}`,
+            },
+            params: lastTimeStamp ? { lastTimeStamp } : {},
+          }
+        );
+        console.log("messagesData", messagesData);
+
+        console.log(
+          "messagesData[-1]?.timestamp",
+          messagesData[messagesData.length - 1]
+        );
+        setLastTimeStamp(
+          messagesData.length > 0
+            ? messagesData[messagesData.length - 1].timestamp
+            : null
+        );
+
+        setMessages((prevState) => [...prevState, ...messagesData]);
+
+        //send read update for unread msgs
+        const unreadMsgIds = messagesData
+          .filter((element) => !element.read)
+          .map((e) => e.id);
+        unreadMsgIds.length > 0 && sendReadUpdate(unreadMsgIds);
+      } catch (error) {
+        setError("error in fetching messagesData");
+      }
+    }
   };
 
-  const sendMsg = (e: React.MouseEvent<HTMLImageElement, MouseEvent>) => {
+  const sendMsg = (e: React.MouseEvent<SVGElement, MouseEvent>) => {
     if (typedMessage.length < 1 || typedMessage.length > 500) {
       setError("msg length should be 1 to 500");
       return;
@@ -164,6 +205,13 @@ export default function Chat({ otherUserId }: IProps) {
     socket?.emit("send_message", msg);
     pushNewMsg(msg);
     setTypedMessage("");
+
+    // setUpdateThread
+    // for pushing message to thread
+    setUpdateThread({
+      otherUserId: otherUserId,
+      threadMessage: { ...msg, messageId: msg.id },
+    });
   };
 
   const updateUserStatus = (online: boolean) => {
@@ -182,6 +230,15 @@ export default function Chat({ otherUserId }: IProps) {
     setMessages((prevState) => [msg, ...prevState]);
   };
 
+  const scrollToBottom = () => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  let lastDate = new Date().toLocaleDateString();
+  let currentMsgDate = null;
+
   return !loading ? (
     <div className="container-chat">
       <div className="chat">
@@ -189,16 +246,42 @@ export default function Chat({ otherUserId }: IProps) {
           <ProfileMessageBox profile={profile!} />
         </div>
         <div className="chat-box">
-          {messages.map((message) => (
-            <Message
-              key={message.id}
-              message={message}
-              self={message.senderId === authState.user!.id}
-            />
-          ))}
+          <div ref={messagesEndRef} />
+          {messages.map((message) => {
+            currentMsgDate = new Date(message.timestamp).toLocaleDateString();
+
+            let temp: Date | null = null;
+            if (
+              new Date(currentMsgDate).getTime() < new Date(lastDate).getTime()
+            ) {
+              temp = new Date(lastDate);
+              lastDate = currentMsgDate;
+            } else {
+              temp = null;
+            }
+
+            return (
+              <div key={message.id}>
+                <Message
+                  message={message}
+                  self={message.senderId === authState.user!.id}
+                />
+                {temp ? (
+                  <div className="oneday-msgs">
+                    {temp.getDate() +
+                      " " +
+                      monthsMap[temp.getMonth()] +
+                      "," +
+                      temp.getFullYear()}
+                  </div>
+                ) : null}
+              </div>
+            );
+          })}
+
           <div>
-            <button className="loadBtn" onClick={loadMorePrevMessage}>
-              load
+            <button className="load-btn" onClick={loadMorePrevMessage}>
+              load more
             </button>
           </div>
         </div>
@@ -209,9 +292,9 @@ export default function Chat({ otherUserId }: IProps) {
             minChars={0}
             maxChars={500}
             text={typedMessage}
+            placeholder="type your message"
           />
-
-          <img src={mic} className="mic" alt="" onClick={(e) => sendMsg(e)} />
+          <IoMdSend className="message-send-btn" onClick={(e) => sendMsg(e)} />
         </div>
       </div>
     </div>

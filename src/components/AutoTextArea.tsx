@@ -24,42 +24,35 @@ const AutoTextArea = ({
 }: IProps) => {
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const [textAreaHeight, setTextAreaHeight] = useState("auto");
-  const [parentHeight, setParentHeight] = useState("auto");
+  // const [parentHeight, setParentHeight] = useState("auto");
 
   useEffect(() => {
-    setParentHeight(`${textAreaRef.current!.scrollHeight}px`);
+    // setParentHeight(`${textAreaRef.current!.scrollHeight}px`);
     setTextAreaHeight(`${textAreaRef.current!.scrollHeight}px`);
     // console.log("use effect text a");
   }, [text]);
 
   const onChangeHandler = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setTextAreaHeight("auto");
-    setParentHeight(`${textAreaRef.current!.scrollHeight}px`);
+    // setParentHeight(`${textAreaRef.current!.scrollHeight}px`);
 
     onChange(event);
   };
 
   return (
-    <div
+    <textarea
+      // required
+      className="auto-textarea"
+      ref={textAreaRef}
+      // rows={rows}
       style={{
-        minHeight: parentHeight,
-        width: "100%",
+        height: textAreaHeight,
+        // ...style,
       }}
-    >
-      <textarea
-        // required
-        className="auto-textarea"
-        ref={textAreaRef}
-        // rows={rows}
-        style={{
-          height: textAreaHeight,
-          // ...style,
-        }}
-        placeholder={placeholder ?? ""}
-        onChange={onChangeHandler}
-        value={text}
-      />
-    </div>
+      placeholder={placeholder ?? ""}
+      onChange={onChangeHandler}
+      value={text}
+    />
   );
 };
 
