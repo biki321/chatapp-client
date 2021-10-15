@@ -30,6 +30,8 @@ export default function Chat({
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [typedMessage, setTypedMessage] = useState("");
   const [loading, setLoading] = useState(true);
+  const [loadMoreLoading, setLoadMoreLoading] = useState(false);
+  const [sentOrReceivedMsgCount, setSentOrReceivedMsgCount] = useState(0);
   const [lastTimeStamp, setLastTimeStamp] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const { socket } = useSocketContext();
@@ -146,10 +148,11 @@ export default function Chat({
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [sentOrReceivedMsgCount]);
 
   const loadMorePrevMessage = async () => {
     if (lastTimeStamp) {
+      setLoadMoreLoading(true);
       console.log("lastTimeStamp", lastTimeStamp);
       try {
         const { data: messagesData } = await axiosIntercept.get<IMessage[]>(
@@ -183,6 +186,7 @@ export default function Chat({
       } catch (error) {
         setError("error in fetching messagesData");
       }
+      setLoadMoreLoading(false);
     }
   };
 
@@ -228,6 +232,7 @@ export default function Chat({
 
   const pushNewMsg = (msg: IMessage) => {
     setMessages((prevState) => [msg, ...prevState]);
+    setSentOrReceivedMsgCount((prevState) => prevState + 1);
   };
 
   const scrollToBottom = () => {
@@ -281,7 +286,7 @@ export default function Chat({
 
           <div>
             <button className="load-btn" onClick={loadMorePrevMessage}>
-              load more
+              {loadMoreLoading ? "loading" : "load more"}
             </button>
           </div>
         </div>
