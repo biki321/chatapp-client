@@ -8,6 +8,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { useAxiosIntercept } from "../contexts/AxiosInterceptContext";
 import IModifiedUser from "../interfaces/iModifiedUser.interface";
 import IUpdateThread from "../interfaces/iUpdateThread.interface";
+import { useHistory } from "react-router-dom";
 
 interface IProps {
   currentThreadId: string | null;
@@ -23,11 +24,12 @@ export default function Threads({
   updateReadProp,
 }: IProps) {
   const { socket } = useSocketContext();
-  const { authState } = useAuth();
+  const { authState, logout } = useAuth();
   const axiosIntercept = useAxiosIntercept();
   const [threads, setThreads] = useState<IThread[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const history = useHistory();
 
   const onMsgReceive = useCallback((msg: IMessage) => {
     setThreads((prevState) => {
@@ -139,6 +141,13 @@ export default function Threads({
     );
   };
 
+  const logoutHandler = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    e.preventDefault();
+    logout(() => {
+      history.replace("/");
+    });
+  };
+
   return !loading ? (
     threads.length > 0 ? (
       <>
@@ -147,7 +156,9 @@ export default function Threads({
           <div className="owner-profile">
             <img src={authState.user?.avatar || pp} alt="" />
             <h2>{authState.user?.username}</h2>
-            <div className="available">available</div>
+            <div className="logout" onClick={(e) => logoutHandler(e)}>
+              logout
+            </div>
           </div>
           <div className="thread-list">
             {threads.map((thread) => (

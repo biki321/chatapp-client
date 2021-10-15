@@ -34,6 +34,7 @@ export default function Chat({
   const [sentOrReceivedMsgCount, setSentOrReceivedMsgCount] = useState(0);
   const [lastTimeStamp, setLastTimeStamp] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [activeMsgId, setActiveMsgId] = useState<string | null>(null);
   const { socket } = useSocketContext();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -268,6 +269,8 @@ export default function Chat({
             return (
               <div key={message.id}>
                 <Message
+                  activeMsgId={activeMsgId}
+                  setActiveMsgId={setActiveMsgId}
                   message={message}
                   self={message.senderId === authState.user!.id}
                 />

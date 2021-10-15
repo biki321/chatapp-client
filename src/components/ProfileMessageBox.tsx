@@ -10,7 +10,6 @@ interface IProps {
 export default function ProfileMessageBox({ profile }: IProps) {
   return (
     <div className="profile">
-      {/* <img src={arrow} className="back-arrow" alt="" /> */}
       <AiOutlineArrowLeft className="back-arrow" />
       <img src={profile.avatar || pp} className="profile-pic" alt="" />
 

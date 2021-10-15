@@ -27,17 +27,11 @@ export default function ChatApp() {
           setUpdateReadThread={setUpdateReadThread}
         />
       ) : (
-        <div></div>
+        <div className="chat-blank">
+          <div className="welcome-title">Welcome to ChatApp</div>
+          <div className="subtitle">Have a good time with your buddies</div>
+        </div>
       )}
     </div>
   );
 }
-
-// const logoutHandler = (
-//   e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-// ) => {
-//   e.preventDefault();
-//   logout(() => {
-//     history.replace("/");
-//   });
-// };
