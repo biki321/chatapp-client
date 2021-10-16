@@ -20,7 +20,7 @@ export function useSocketContext() {
 }
 
 export function SocketContextProvider({ children }: IProps) {
-  const { authState } = useAuth();
+  const { authState, refreshToken } = useAuth();
   const [socketObj, setSocket] = useState<Partial<IContext>>({});
 
   // On the client side you add the authorization header like this:
@@ -57,13 +57,19 @@ export function SocketContextProvider({ children }: IProps) {
         console.log("from socket context err", err);
       });
 
+      newSocket?.on("un_authenticated", async () => {
+        console.log("un_authenticated socket");
+        await refreshToken();
+      });
+
       return () => {
         newSocket?.off("connect_error");
+        newSocket?.off("un_authenticated");
         newSocket?.offAny();
         newSocket?.disconnect();
       };
     }
-  }, [authState.accessToken, socketOptions]);
+  }, [authState.accessToken, refreshToken, socketOptions]);
 
   return (
     <SocketContext.Provider value={{ socket: socketObj.socket }}>

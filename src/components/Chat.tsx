@@ -248,6 +248,7 @@ export default function Chat({
 
   return !loading ? (
     <div className="container-chat">
+      <div>{error}</div>
       <div className="chat">
         <div className="chat-header">
           <ProfileMessageBox profile={profile!} />
