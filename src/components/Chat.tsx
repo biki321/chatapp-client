@@ -29,7 +29,10 @@ export default function Chat({
   const axiosIntercept = useAxiosIntercept();
   const [profile, setProfile] = useState({} as IModifiedUser);
   const [messages, setMessages] = useState<IMessage[]>([]);
-  const [typedMessage, setTypedMessage] = useState("");
+  const [typedMessageData, setTypedMessageData] = useState({
+    typedMessage: "",
+    textError: "",
+  });
   const [loading, setLoading] = useState(true);
   const [loadMoreLoading, setLoadMoreLoading] = useState(false);
   const [sentOrReceivedMsgCount, setSentOrReceivedMsgCount] = useState(0);
@@ -193,8 +196,11 @@ export default function Chat({
   };
 
   const sendMsg = (e: React.MouseEvent<SVGElement, MouseEvent>) => {
-    if (typedMessage.length < 1 || typedMessage.length > 500) {
-      setError("msg length should be 1 to 500");
+    if (typedMessageData.typedMessage.length > 500) {
+      setTypedMessageData((prevState) => ({
+        ...prevState,
+        textError: "msg length should be 1 to 500",
+      }));
       return;
     }
     const uuid = uuidv4();
@@ -204,13 +210,13 @@ export default function Chat({
       otherUserId: otherUserId,
       id: uuid,
       senderId: authState.user!.id,
-      text: typedMessage,
+      text: typedMessageData.typedMessage,
       timestamp: new Date().toISOString(),
     };
 
     socket?.emit("send_message", msg);
     pushNewMsg(msg);
-    setTypedMessage("");
+    setTypedMessageData({ typedMessage: "", textError: "" });
 
     // setUpdateThread
     // for pushing message to thread
@@ -248,7 +254,7 @@ export default function Chat({
 
   return !loading ? (
     <div className="container-chat">
-      <div>{error}</div>
+      <div className="error">{error}</div>
       <div className="chat">
         <div className="chat-header">
           <ProfileMessageBox profile={profile!} />
@@ -296,12 +302,18 @@ export default function Chat({
           </div>
         </div>
 
+        <div className="text-error">{typedMessageData.textError}</div>
         <div className="chat-footer">
           <AutoTextArea
-            onChange={(e) => setTypedMessage(e.target.value)}
+            onChange={(e) =>
+              setTypedMessageData({
+                typedMessage: e.target.value,
+                textError: "",
+              })
+            }
             minChars={0}
             maxChars={500}
-            text={typedMessage}
+            text={typedMessageData.typedMessage}
             placeholder="type your message"
           />
           <IoMdSend className="message-send-btn" onClick={(e) => sendMsg(e)} />
