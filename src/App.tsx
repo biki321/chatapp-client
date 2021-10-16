@@ -1,8 +1,7 @@
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import ChatApp from "./components/ChatApp";
-import Login from "./components/Login";
+import Landing from "./components/Landing";
 import ProtectedRoute from "./components/ProtectedRoute";
-import SignUp from "./components/SignUp";
 import { AuthProvider } from "./contexts/AuthContext";
 import { AxiosInterceptContextProvider } from "./contexts/AxiosInterceptContext";
 import { SocketContextProvider } from "./contexts/SocketContext";
@@ -15,10 +14,7 @@ function App() {
         <BrowserRouter>
           <Switch>
             <Route path="/" exact>
-              <Login />
-            </Route>
-            <Route path="/signup" exact>
-              <SignUp />
+              <Landing />
             </Route>
             <SocketContextProvider>
               <ProtectedRoute path="/chat" exact>

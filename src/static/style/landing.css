@@ -1,0 +1,18 @@
+.landing-page-div {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: auto;
+}
+
+.landing-page-div .toggle-line {
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.landing-page-div .toggle-btn {
+  color: #1b65b5;
+  cursor: pointer;
+}

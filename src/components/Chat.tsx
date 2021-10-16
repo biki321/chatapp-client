@@ -12,6 +12,7 @@ import { IoMdSend } from "react-icons/io";
 import "../static/style/chat.css";
 import monthsMap from "../helpers/monthsMap";
 import IUpdateThread from "../interfaces/iUpdateThread.interface";
+import Spinner from "./spinner";
 
 interface IProps {
   otherUserId: string;
@@ -307,6 +308,15 @@ export default function Chat({
       </div>
     </div>
   ) : (
-    <div>loading </div>
+    <div
+      style={{
+        width: "100%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <Spinner width="50px" />
+    </div>
   );
 }

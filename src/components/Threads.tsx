@@ -9,6 +9,7 @@ import { useAxiosIntercept } from "../contexts/AxiosInterceptContext";
 import IModifiedUser from "../interfaces/iModifiedUser.interface";
 import IUpdateThread from "../interfaces/iUpdateThread.interface";
 import { useHistory } from "react-router-dom";
+import Spinner from "./spinner";
 
 interface IProps {
   currentThreadId: string | null;
@@ -153,6 +154,7 @@ export default function Threads({
       <>
         <div className="container-threads">
           <h2 className="brand-name">Chat</h2>
+          <div>{error}</div>
           <div className="owner-profile">
             <img src={authState.user?.avatar || pp} alt="" />
             <h2>{authState.user?.username}</h2>
@@ -223,6 +225,15 @@ export default function Threads({
       <div>no user exists</div>
     )
   ) : (
-    <div>loading</div>
+    <div
+      style={{
+        width: "50%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <Spinner width="50px" />
+    </div>
   );
 }

@@ -1,5 +1,6 @@
 import { AxiosResponse } from "axios";
 import React, { useContext, useEffect, useState, useCallback } from "react";
+import Spinner from "../components/spinner";
 import IUser from "../interfaces/iUser.interface";
 import axiosIns from "../services/axiosIns";
 
@@ -39,24 +40,22 @@ const initialAuthContext: IContext = {
     signupError: null,
     refreshTokenError: null,
   },
-  login: function (
-    username: string,
-    password: string,
-    callback: () => void
-  ): Promise<void> {
+  login: function (): // username: string,
+  // password: string,
+  // callback: () => void
+  Promise<void> {
     throw new Error("Function not implemented.");
   },
   refreshToken: function (): Promise<string | null> {
     throw new Error("Function not implemented.");
   },
-  logout: function (callback: () => void): void {
+  logout: function (): void {
     throw new Error("Function not implemented.");
   },
-  signup: function (
-    username: string,
-    password: string,
-    callback: any
-  ): Promise<void> {
+  signup: function (): // username: string,
+  // password: string,
+  // callback: any
+  Promise<void> {
     throw new Error("Function not implemented.");
   },
 };
@@ -213,7 +212,20 @@ export function AuthProvider({ children }: IProps) {
 
   return (
     <AuthContext.Provider value={values}>
-      {!authState.isAuthLoading ? children : <div>loading</div>}
+      {!authState.isAuthLoading ? (
+        children
+      ) : (
+        <div
+          style={{
+            height: "100vh",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Spinner width="60px" />
+        </div>
+      )}
     </AuthContext.Provider>
   );
 }
