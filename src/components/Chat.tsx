@@ -79,11 +79,6 @@ export default function Chat({
           }
         );
 
-        const l =
-          messagesData.length > 0
-            ? messagesData[messagesData.length - 1].timestamp
-            : null;
-
         setLastTimeStamp(
           messagesData.length > 0
             ? messagesData[messagesData.length - 1].timestamp
