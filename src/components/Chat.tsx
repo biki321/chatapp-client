@@ -57,7 +57,6 @@ export default function Chat({
   );
 
   useEffect(() => {
-    
     (async () => {
       try {
         const { data: profileData } = await axiosIntercept.get(
@@ -68,7 +67,7 @@ export default function Chat({
             },
           }
         );
-        
+
         setProfile(profileData);
 
         const { data: messagesData } = await axiosIntercept.get<IMessage[]>(
@@ -79,18 +78,12 @@ export default function Chat({
             },
           }
         );
-        
-
-        
-          "messagesData[-1]?.timestamp",
-          messagesData[messagesData.length - 1]
-        );
 
         const l =
           messagesData.length > 0
             ? messagesData[messagesData.length - 1].timestamp
             : null;
-        
+
         setLastTimeStamp(
           messagesData.length > 0
             ? messagesData[messagesData.length - 1].timestamp
@@ -124,7 +117,6 @@ export default function Chat({
 
   const onGetReadUpdate = useCallback(
     ({ otherUserId: otherPartnerId }: { otherUserId: string }) => {
-      
       if (otherPartnerId === otherUserId) updateRead();
     },
     [otherUserId]
@@ -132,7 +124,6 @@ export default function Chat({
 
   const onUserStatusHandler = useCallback(
     ({ userId, online }: { userId: string; online: boolean }) => {
-      
       if (userId === otherUserId) updateUserStatus(online);
     },
     [otherUserId]
@@ -157,7 +148,7 @@ export default function Chat({
   const loadMorePrevMessage = async () => {
     if (lastTimeStamp) {
       setLoadMoreLoading(true);
-      
+
       try {
         const { data: messagesData } = await axiosIntercept.get<IMessage[]>(
           `/chat/messages/${otherUserId}`,
@@ -168,12 +159,7 @@ export default function Chat({
             params: lastTimeStamp ? { lastTimeStamp } : {},
           }
         );
-        
 
-        
-          "messagesData[-1]?.timestamp",
-          messagesData[messagesData.length - 1]
-        );
         setLastTimeStamp(
           messagesData.length > 0
             ? messagesData[messagesData.length - 1].timestamp
@@ -203,7 +189,7 @@ export default function Chat({
       return;
     }
     const uuid = uuidv4();
-    
+
     const msg = {
       userId: authState.user!.id,
       otherUserId: otherUserId,
