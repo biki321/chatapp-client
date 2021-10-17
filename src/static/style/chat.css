@@ -36,6 +36,7 @@
   margin: 15px auto;
   padding: 3px 8px;
   display: block;
+  cursor: pointer;
 }
 
 .chat-box .oneday-msgs {
