@@ -13,3 +13,8 @@ checkout [live](https://chatapp3210.netlify.app/)
 
 This repo is for the client code
 here is the [backend code](https://github.com/biki321/chatapp-backend)
+
+screenshots
+<a href="https://imgur.com/VGgboLh"><img src="https://i.imgur.com/VGgboLh.png" title="source: imgur.com" /></a>
+<a href="https://imgur.com/6lK9v0d"><img src="https://i.imgur.com/6lK9v0d.png" title="source: imgur.com" /></a>
+<a href="https://imgur.com/Okana5d"><img src="https://i.imgur.com/Okana5d.png" title="source: imgur.com" /></a>
