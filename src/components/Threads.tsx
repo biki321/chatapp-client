@@ -1,4 +1,5 @@
-import pp from "../static/img/pp.png";
+import pp_male from "../static/img/male.png";
+import pp_female from "../static/img/female.png";
 import "../static/style/threads.css";
 import IThread from "../interfaces/iThread.interface";
 import { useCallback, useEffect, useState } from "react";
@@ -8,8 +9,9 @@ import { useAuth } from "../contexts/AuthContext";
 import { useAxiosIntercept } from "../contexts/AxiosInterceptContext";
 import IModifiedUser from "../interfaces/iModifiedUser.interface";
 import IUpdateThread from "../interfaces/iUpdateThread.interface";
-import { useHistory } from "react-router-dom";
 import Spinner from "./spinner";
+import LogoutButton from "./LogoutButton";
+import NoUser from "./NoUser";
 
 interface IProps {
   currentThreadId: string | null;
@@ -25,12 +27,11 @@ export default function Threads({
   updateReadProp,
 }: IProps) {
   const { socket } = useSocketContext();
-  const { authState, logout } = useAuth();
+  const { authState } = useAuth();
   const axiosIntercept = useAxiosIntercept();
   const [threads, setThreads] = useState<IThread[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const history = useHistory();
 
   const onMsgReceive = useCallback((msg: IMessage) => {
     setThreads((prevState) => {
@@ -142,13 +143,6 @@ export default function Threads({
     );
   };
 
-  const logoutHandler = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    e.preventDefault();
-    logout(() => {
-      history.replace("/");
-    });
-  };
-
   const getTimeOfMsg = (timestamp: string) => {
     const time: Date = new Date(timestamp);
 
@@ -171,11 +165,12 @@ export default function Threads({
           <h2 className="brand-name">Chat</h2>
           <div>{error}</div>
           <div className="owner-profile">
-            <img src={authState.user?.avatar || pp} alt="" />
+            <img
+              src={authState.user?.gender === "male" ? pp_male : pp_female}
+              alt=""
+            />
             <h2>{authState.user?.username}</h2>
-            <div className="logout" onClick={(e) => logoutHandler(e)}>
-              logout
-            </div>
+            <LogoutButton />
           </div>
           <div className="thread-list">
             {threads.map((thread) => {
@@ -192,7 +187,14 @@ export default function Threads({
                   onClick={(e) => setCurrentThreadId(thread.otherUser.id)}
                 >
                   <div className="profile-pic-div">
-                    <img src={thread.otherUser?.avatar || pp} alt="" />
+                    <img
+                      src={
+                        thread.otherUser?.gender === "male"
+                          ? pp_male
+                          : pp_female
+                      }
+                      alt=""
+                    />
                     {thread.otherUser.online && (
                       <div className="thread-online-status">
                         <div className="outer-circle">
@@ -227,9 +229,6 @@ export default function Threads({
                           : ""
                       }`}
                     >
-                      {/* {new Date(thread.threadMessage.timestamp).getHours() +
-                        ":" +
-                        new Date(thread.threadMessage.timestamp).getMinutes()} */}
                       {getTimeOfMsg(thread.threadMessage.timestamp)}
                     </div>
                   ) : null}
@@ -240,7 +239,7 @@ export default function Threads({
         </div>
       </>
     ) : (
-      <div>no user exists</div>
+      <NoUser />
     )
   ) : (
     <div

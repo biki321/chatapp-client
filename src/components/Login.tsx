@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Redirect, useHistory, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import "../static/style/login.css";
@@ -12,29 +12,11 @@ interface LocationState {
 export default function Login() {
   const { authState, login } = useAuth();
   const [inputData, setInputData] = useState({ username: "", password: "" });
-  const [inputError, setInputError] = useState({
-    usernameError: "",
-    usernameValid: false,
-    passwordError: "",
-    passwordValid: false,
-  });
-  const [valid, setValid] = useState(false);
   const location = useLocation<LocationState>();
   const history = useHistory();
   const { from } = location.state || { from: { pathname: "/chat" } };
 
-  useEffect(() => {
-    if (inputError.usernameValid && inputError.passwordValid) setValid(true);
-    else setValid(false);
-  }, [inputError.passwordValid, inputError.usernameValid]);
-
-  if (authState.isAuthLoading) {
-    return <div>Loading</div>;
-  }
-
   if (authState.user) {
-    // console.log("isAuthenticated", authState.isAuthenticated);
-    // history.replace("/home");
     console.log("login page authState.isAuthenticated", from);
     return <Redirect to={from.pathname} />;
   }
@@ -48,7 +30,6 @@ export default function Login() {
       });
     } catch (error) {}
     setInputData({ username: "", password: "" });
-    setValid(false);
   };
 
   const setInputDataHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -57,38 +38,11 @@ export default function Login() {
         ...prevState,
         username: e.target.value,
       }));
-
-      if (e.target.value.length < 4 || e.target.value.length > 30) {
-        setInputError((prevState) => ({
-          ...prevState,
-          usernameError: "username should be between 4 to 30 characters",
-          usernameValid: false,
-        }));
-      } else {
-        setInputError((prevState) => ({
-          ...prevState,
-          usernameError: "",
-          usernameValid: true,
-        }));
-      }
     } else if (e.target.name === "password") {
       setInputData((prevState) => ({
         ...prevState,
         password: e.target.value,
       }));
-      if (e.target.value.length < 4 || e.target.value.length > 30) {
-        setInputError((prevState) => ({
-          ...prevState,
-          passwordError: "password should be between 5 to 30 characters",
-          passwordValid: false,
-        }));
-      } else {
-        setInputError((prevState) => ({
-          ...prevState,
-          passwordError: "",
-          passwordValid: true,
-        }));
-      }
     }
   };
 
@@ -106,8 +60,9 @@ export default function Login() {
           onChange={(e) => setInputDataHandler(e)}
           placeholder={"Enter username"}
           autoComplete="off"
+          required
         />
-        <div className="login-error">{inputError.usernameError}</div>
+
         <label htmlFor="password">Password</label>
         <input
           type="password"
@@ -116,13 +71,10 @@ export default function Login() {
           value={inputData.password}
           onChange={(e) => setInputDataHandler(e)}
           placeholder={"Enter password"}
+          required
         />
-        <div className="login-error">{inputError.passwordError}</div>
-        <button
-          type="submit"
-          className={`login-btn ${!valid ? "disabled-btn" : ""}`}
-          disabled={!valid}
-        >
+
+        <button type="submit" className="login-btn">
           {"Sign In"}
         </button>
       </form>

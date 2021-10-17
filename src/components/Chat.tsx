@@ -295,11 +295,13 @@ export default function Chat({
             );
           })}
 
-          <div>
-            <button className="load-btn" onClick={loadMorePrevMessage}>
-              {loadMoreLoading ? "loading" : "load more"}
-            </button>
-          </div>
+          {messages.length > 0 ? (
+            <div>
+              <button className="load-btn" onClick={loadMorePrevMessage}>
+                {loadMoreLoading ? "loading" : "load more"}
+              </button>
+            </div>
+          ) : null}
         </div>
 
         <div className="text-error">{typedMessageData.textError}</div>

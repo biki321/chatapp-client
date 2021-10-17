@@ -1,0 +1,12 @@
+.no-user-div {
+  height: 100vh;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.no-user-div .no-user-line {
+  margin-bottom: 20px;
+}

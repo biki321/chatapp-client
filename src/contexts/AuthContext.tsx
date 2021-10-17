@@ -28,7 +28,12 @@ interface IContext {
   ): Promise<void>;
   refreshToken(): Promise<string | null>;
   logout: (callback: () => void) => void;
-  signup: (username: string, password: string, callback: any) => Promise<void>;
+  signup: (
+    username: string,
+    password: string,
+    gender: string,
+    callback: any
+  ) => Promise<void>;
 }
 
 const initialAuthContext: IContext = {
@@ -40,10 +45,7 @@ const initialAuthContext: IContext = {
     signupError: null,
     refreshTokenError: null,
   },
-  login: function (): // username: string,
-  // password: string,
-  // callback: () => void
-  Promise<void> {
+  login: function (): Promise<void> {
     throw new Error("Function not implemented.");
   },
   refreshToken: function (): Promise<string | null> {
@@ -52,10 +54,7 @@ const initialAuthContext: IContext = {
   logout: function (): void {
     throw new Error("Function not implemented.");
   },
-  signup: function (): // username: string,
-  // password: string,
-  // callback: any
-  Promise<void> {
+  signup: function (): Promise<void> {
     throw new Error("Function not implemented.");
   },
 };
@@ -145,13 +144,17 @@ export function AuthProvider({ children }: IProps) {
   );
 
   const signup = useCallback(
-    async (username: string, password: string, callback) => {
+    async (username: string, password: string, gender: string, callback) => {
       setAuthState((prevState) => ({ ...prevState, isAuthLoading: true }));
       try {
         const res = await axiosIns.post<
-          { username: string; password: string },
+          { username: string; password: string; gender: string },
           AxiosResponse<IUser>
-        >("/auth/signUp", { username, password }, { withCredentials: true });
+        >(
+          "/auth/signUp",
+          { username, password, gender },
+          { withCredentials: true }
+        );
         const token = res.headers["authorization"];
         console.log(token);
         setAuthState((prevState) => ({
@@ -176,6 +179,7 @@ export function AuthProvider({ children }: IProps) {
   );
 
   const logout = async (callback: () => void) => {
+    setAuthState((prevState) => ({ ...prevState, isAuthLoading: true }));
     await axiosIns.get("auth/logout", {
       withCredentials: true,
       headers: {

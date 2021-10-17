@@ -1,0 +1,13 @@
+.logout-btn {
+  border: 1px solid red;
+  color: red;
+  font-size: 12px;
+  padding: 1px 10px;
+  border-radius: 5px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.logout-btn:hover {
+  font-weight: bold;
+}

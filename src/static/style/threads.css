@@ -2,7 +2,6 @@
   width: 300px;
   height: 100vh;
   margin-right: 15px;
-  /* margin-top: 30px; */
 }
 
 .thread-list {
@@ -12,20 +11,6 @@
 .container-threads .brand-name {
   margin-top: 20px;
   margin-bottom: 20px;
-}
-
-.container-threads .logout {
-  border: 1px solid red;
-  color: red;
-  font-size: 12px;
-  padding: 1px 10px;
-  border-radius: 5px;
-  text-align: center;
-  cursor: pointer;
-}
-
-.container-threads .logout:hover {
-  font-weight: bold;
 }
 
 .owner-profile {
