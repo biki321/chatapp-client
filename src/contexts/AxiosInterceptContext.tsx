@@ -23,20 +23,15 @@ export function AxiosInterceptContextProvider({ children }: IProps) {
     },
   });
 
-  console.log("axiosintercept comp inside");
-
   axiosIntercept.interceptors.request.use(
     async (config: AxiosRequestConfig) => {
-      console.log("intercept");
-      console.log(authState);
       if (!authState.accessToken) {
-        console.log("not acc at intercept token");
         return Promise.reject("accessToken is null");
       }
       const { exp } = jwt_decode<IJwtPayload>(authState.accessToken);
       if (exp * 1000 < Date.now().valueOf()) {
         const token = await refreshToken();
-        console.log("new tok at intercep", token);
+
         if (!token) return Promise.reject("could not get new token");
         config.headers!["Authorization"] = `token ${token}`;
       }

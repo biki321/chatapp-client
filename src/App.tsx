@@ -8,7 +8,6 @@ import { AxiosInterceptContextProvider } from "./contexts/AxiosInterceptContext"
 import { SocketContextProvider } from "./contexts/SocketContext";
 
 function App() {
-  console.log("inside app comp");
   return (
     <AuthProvider>
       <AxiosInterceptContextProvider>

@@ -17,7 +17,6 @@ export default function Login() {
   const { from } = location.state || { from: { pathname: "/chat" } };
 
   if (authState.user) {
-    console.log("login page authState.isAuthenticated", from);
     return <Redirect to={from.pathname} />;
   }
 
@@ -25,7 +24,6 @@ export default function Login() {
     e.preventDefault();
     try {
       login(inputData.username, inputData.password, () => {
-        console.log("at login func ", from);
         history.replace(from);
       });
     } catch (error) {}

@@ -37,9 +37,9 @@ export default function SignUp() {
   }
 
   if (authState.user) {
-    // console.log("isAuthenticated", authState.isAuthenticated);
+    //
     // history.replace("/home");
-    console.log("signup page authState.isAuthenticated", from);
+
     return <Redirect to={from.pathname} />;
   }
 
@@ -47,7 +47,6 @@ export default function SignUp() {
     e.preventDefault();
     try {
       signup(inputData.username, inputData.password, inputData.gender, () => {
-        console.log("at signup func ", from);
         history.replace(from);
       });
     } catch (error) {}
@@ -94,7 +93,6 @@ export default function SignUp() {
         }));
       }
     } else if (e.target.name === "gender") {
-      console.log("gender", e.target.value);
       setInputData((prevState) => ({
         ...prevState,
         gender: e.target.value,

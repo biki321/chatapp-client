@@ -60,7 +60,6 @@ export default function Threads({
 
   const onThreadStatusHandler = useCallback(
     ({ userId, online }: { userId: string; online: boolean }) => {
-      console.log("msg at onThreadStatusHandler");
       setThreads((prevState) => {
         return prevState.map((thread) =>
           thread.otherUser.id === userId
@@ -73,7 +72,6 @@ export default function Threads({
   );
 
   useEffect(() => {
-    console.log("at useeffect threads comp");
     (async () => {
       try {
         const { data: threadsData } = await axiosIntercept.get(
@@ -84,7 +82,7 @@ export default function Threads({
             },
           }
         );
-        console.log("threadsData", threadsData);
+
         setThreads(threadsData);
       } catch (error) {
         setError("error in fetching threads");
@@ -122,7 +120,6 @@ export default function Threads({
 
   useEffect(() => {
     if (updateReadProp && currentThreadId) {
-      console.log("inside updateRead");
       updateRead(currentThreadId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

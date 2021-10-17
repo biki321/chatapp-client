@@ -39,7 +39,6 @@ export function SocketContextProvider({ children }: IProps) {
   );
 
   useEffect(() => {
-    console.log("useeffect at sockt context");
     if (authState.accessToken) {
       const newSocket = io(
         process.env.REACT_APP_BASE_URL_FOR_SCKT!,
@@ -47,18 +46,11 @@ export function SocketContextProvider({ children }: IProps) {
       );
       setSocket({ socket: newSocket });
 
-      console.log("socket at context", newSocket);
+      newSocket?.onAny((event, ...args) => {});
 
-      newSocket?.onAny((event, ...args) => {
-        console.log("from socket context all events", event, args);
-      });
-
-      newSocket?.on("connect_error", (err) => {
-        console.log("from socket context err", err);
-      });
+      newSocket?.on("connect_error", (err) => {});
 
       newSocket?.on("un_authenticated", async () => {
-        console.log("un_authenticated socket");
         await refreshToken();
       });
 

@@ -29,7 +29,7 @@ const AutoTextArea = ({
   useEffect(() => {
     // setParentHeight(`${textAreaRef.current!.scrollHeight}px`);
     setTextAreaHeight(`${textAreaRef.current!.scrollHeight}px`);
-    // console.log("use effect text a");
+    //
   }, [text]);
 
   const onChangeHandler = (event: React.ChangeEvent<HTMLTextAreaElement>) => {

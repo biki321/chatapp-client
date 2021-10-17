@@ -13,7 +13,6 @@ export default function ProtectedRoute({ children, ...rest }: IProps) {
     <Route
       {...rest}
       render={({ location }) => {
-        console.log("at protected route", location);
         return authState.user ? (
           children
         ) : (

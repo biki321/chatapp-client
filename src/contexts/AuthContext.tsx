@@ -4,8 +4,6 @@ import Spinner from "../components/spinner";
 import IUser from "../interfaces/iUser.interface";
 import axiosIns from "../services/axiosIns";
 
-console.log("auth context outside");
-
 interface IProps {
   children: JSX.Element;
 }
@@ -91,7 +89,7 @@ export function AuthProvider({ children }: IProps) {
         withCredentials: true,
       });
       const token = res.headers["authorization"];
-      console.log(token);
+
       setAuthState((prevState) => ({
         ...prevState,
         user: res.data,
@@ -121,7 +119,7 @@ export function AuthProvider({ children }: IProps) {
           AxiosResponse<IUser>
         >("/auth/login", { username, password }, { withCredentials: true });
         const token = res.headers["authorization"];
-        console.log(token);
+
         callback();
         setAuthState((prevState) => ({
           ...prevState,
@@ -156,7 +154,7 @@ export function AuthProvider({ children }: IProps) {
           { withCredentials: true }
         );
         const token = res.headers["authorization"];
-        console.log(token);
+
         setAuthState((prevState) => ({
           ...prevState,
           user: res.data,
@@ -207,12 +205,9 @@ export function AuthProvider({ children }: IProps) {
 
   useEffect(() => {
     (async () => {
-      console.log("useeffect at authcontxt");
       await refreshToken();
     })();
   }, [refreshToken]);
-
-  console.log("auth context inside");
 
   return (
     <AuthContext.Provider value={values}>

@@ -57,7 +57,7 @@ export default function Chat({
   );
 
   useEffect(() => {
-    console.log("fetch message for", otherUserId);
+    
     (async () => {
       try {
         const { data: profileData } = await axiosIntercept.get(
@@ -68,7 +68,7 @@ export default function Chat({
             },
           }
         );
-        console.log("profileData", profileData);
+        
         setProfile(profileData);
 
         const { data: messagesData } = await axiosIntercept.get<IMessage[]>(
@@ -79,9 +79,9 @@ export default function Chat({
             },
           }
         );
-        console.log("messagesData", messagesData);
+        
 
-        console.log(
+        
           "messagesData[-1]?.timestamp",
           messagesData[messagesData.length - 1]
         );
@@ -90,7 +90,7 @@ export default function Chat({
           messagesData.length > 0
             ? messagesData[messagesData.length - 1].timestamp
             : null;
-        console.log("l is", l);
+        
         setLastTimeStamp(
           messagesData.length > 0
             ? messagesData[messagesData.length - 1].timestamp
@@ -114,7 +114,6 @@ export default function Chat({
 
   const onMsgReceiveHandler = useCallback(
     (message: IMessage) => {
-      console.log("msg at onMsgReceiveHandler", message);
       if (message.senderId === otherUserId) {
         pushNewMsg(message);
         sendReadUpdate([message.id]);
@@ -125,7 +124,7 @@ export default function Chat({
 
   const onGetReadUpdate = useCallback(
     ({ otherUserId: otherPartnerId }: { otherUserId: string }) => {
-      console.log("msg at onGetReadUpdate");
+      
       if (otherPartnerId === otherUserId) updateRead();
     },
     [otherUserId]
@@ -133,7 +132,7 @@ export default function Chat({
 
   const onUserStatusHandler = useCallback(
     ({ userId, online }: { userId: string; online: boolean }) => {
-      console.log("msg at onUserStatusHandler");
+      
       if (userId === otherUserId) updateUserStatus(online);
     },
     [otherUserId]
@@ -158,7 +157,7 @@ export default function Chat({
   const loadMorePrevMessage = async () => {
     if (lastTimeStamp) {
       setLoadMoreLoading(true);
-      console.log("lastTimeStamp", lastTimeStamp);
+      
       try {
         const { data: messagesData } = await axiosIntercept.get<IMessage[]>(
           `/chat/messages/${otherUserId}`,
@@ -169,9 +168,9 @@ export default function Chat({
             params: lastTimeStamp ? { lastTimeStamp } : {},
           }
         );
-        console.log("messagesData", messagesData);
+        
 
-        console.log(
+        
           "messagesData[-1]?.timestamp",
           messagesData[messagesData.length - 1]
         );
@@ -204,7 +203,7 @@ export default function Chat({
       return;
     }
     const uuid = uuidv4();
-    console.log("Your UUID is: " + uuid);
+    
     const msg = {
       userId: authState.user!.id,
       otherUserId: otherUserId,

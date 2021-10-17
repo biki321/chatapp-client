@@ -10,8 +10,6 @@ export default function ChatApp() {
   const [updateThread, setUpdateThread] = useState<IUpdateThread | null>(null);
   const [updateReadThread, setUpdateReadThread] = useState<number | null>(null);
 
-  console.log("chatAppComp inside");
-
   return (
     <div className="container-chatapp">
       <Threads
