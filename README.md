@@ -1,6 +1,6 @@
 ## Chatapp
 
-This is a web chat application.
+This is a webbased chat application.
 checkout [live](https://chatapp3210.netlify.app/)
 [check demo on youtube](https://youtu.be/l2lv4xyIlY8)
 
@@ -10,6 +10,14 @@ checkout [live](https://chatapp3210.netlify.app/)
 - nest.js for server side code
 - postgresql db for storing data (user info, message etc.)
 - socket.io for Bidirectional communication between client and server.
+
+**Features**
+
+- authentication using jwt(it has both refreshtoken and accesstoken implementation)
+- one to one messaging.
+- online status of user
+- message read receipt, message sent time, separation of messages in the message box by date, loading more messages
+- users list on left with their online status
 
 This repo is for the client code
 here is the [backend code](https://github.com/biki321/chatapp-backend)
